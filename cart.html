@@ -3,21 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Your Space - Amazon</title>
+    <title>Shopping Cart - Amazon</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="stylesheet3.css">
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const addToCartButtons = document.querySelectorAll('.add-to-cart');
-            addToCartButtons.forEach(button => {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+            } else {
+                cart.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'cart-item';
+                    itemDiv.innerHTML = `
+                        <h3>${item.product}</h3>
+                        <p>Price: ${item.price}</p>
+                        <button class="remove-from-cart" data-product="${item.product}">Remove</button>
+                    `;
+                    cartItemsContainer.appendChild(itemDiv);
+                });
+            }
+
+            // Remove from cart
+            document.querySelectorAll('.remove-from-cart').forEach(button => {
                 button.addEventListener('click', function() {
-                    const product = this.parentElement.previousElementSibling.previousElementSibling.textContent;
-                    const price = this.parentElement.previousElementSibling.textContent;
-                    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-                    cart.push({ product, price });
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                    this.textContent = 'Added';
-                    this.disabled = true;
+                    const product = this.getAttribute('data-product');
+                    const updatedCart = cart.filter(item => item.product !== product);
+                    localStorage.setItem('cart', JSON.stringify(updatedCart));
+                    location.reload();
                 });
             });
         });
@@ -88,40 +103,9 @@
             </div>
         </div>
     </header>
-    <h1>Free Your Space - Explore more products</h1>
-    <div class="shop-section">
-        <div class="box1 box">
-            <div class="box-content">
-                <h2>sandals</h2>
-                <div class="box-image" style="background-image: url('sandals.jpg');"></div>
-                <p>₹499</p>
-                <button class="add-to-cart">Add to Cart</button>
-            </div>
-        </div>
-        <div class="box2 box">
-            <div class="box-content">
-                <h2>boots</h2>
-                <div class="box-image" style="background-image: url('boots.jpg');"></div>
-                <p>₹2999</p>
-                <button class="add-to-cart">Add to Cart</button>
-            </div>
-        </div>
-        <div class="box3 box">
-            <div class="box-content">
-                <h2>slippers</h2>
-                <div class="box-image" style="background-image: url('slippers.jpg');"></div>
-                <p>₹299</p>
-                <button class="add-to-cart">Add to Cart</button>
-            </div>
-        </div>
-        <div class="box4 box">
-            <div class="box-content">
-                <h2>sneakers</h2>
-                <div class="box-image" style="background-image: url('sneakers.jpg');"></div>
-                <p>₹1999</p>
-                <button class="add-to-cart">Add to Cart</button>
-            </div>
-        </div>
+    <div class="cart-section">
+        <h1>Your Shopping Cart</h1>
+        <div id="cart-items"></div>
     </div>
     <footer>
         <div class="foot-panel1">
@@ -181,11 +165,3 @@
     </footer>
 </body>
 </html>
-
-
-
-
-
-
-
-
